@@ -39,15 +39,12 @@ public class Alpha {
                 b = (b >> 6) & mascaraRecorteBit;
 
                 //Estirar
-//                r = (r*255)/15;
-//                g = (g*255)/15;
-//                b = (b*255)/15;
-                //Dos canales
-                r = (r*255)/3;
-                g = (g*255)/3;
-                b = (b*255)/3;
+                int exponente = 4;
+                r = (r*255)/(int) Math.pow(2, exponente);
+                g = (g*255)/(int) Math.pow(2, exponente);
+                b = (b*255)/(int) Math.pow(2, exponente);
 
-
+                pixelNuevo =  (a << 24) | (r << 16) | (g << 8) | (b);
 
                 nuevoBuffer.setRGB(x,y,pixelNuevo);
             }

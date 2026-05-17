@@ -82,7 +82,6 @@ public class Convolucion {
         int r, g, b;
 
         float sumaR, sumaG, sumaB;
-        int indice = 0;
 
         float[][] matrizConv = {
                 {1f / 9, 1f / 9, 1f / 9}, //fila 0
@@ -112,8 +111,6 @@ public class Convolucion {
                         sumaR += r * matrizConv[i+1][j+1];
                         sumaG += g * matrizConv[i+1][j+1];
                         sumaB += b * matrizConv[i+1][j+1];
-
-                        indice++;
                     }
                 }
 
