@@ -1,4 +1,4 @@
-package org.practica;
+package org.practica.uno;
 
 public class Kernels {
     public static final float[] normal = {
@@ -23,7 +23,8 @@ public class Kernels {
     };
 
     //(8 veces -0.5 es -4, más el 4 del centro = 0)
-    // Esto hace que las zonas planas de la imagen (donde no hay bordes) se vuelvan totalmente negras, iluminando únicamente las siluetas.
+    // Esto hace que las zonas planas de la imagen (donde no hay bordes)
+    // se vuelvan totalmente negras, iluminando únicamente las siluetas.
     public static final float[] bordes = {
             -0.5f, -0.5f, -0.5f,
             -0.5f,4f, -0.5f,

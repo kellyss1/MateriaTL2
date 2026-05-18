@@ -53,9 +53,21 @@ public class Blending {
                         g2 = (pixel2 >> 8) & 0xFF;
                         b2 = (pixel2) & 0xFF;
 
+                        //alpha blending
                         r = (int) ((1-alpha) * r1 + alpha *r2);
                         g = (int) ((1-alpha) * g1 + alpha *g2);
                         b = (int) ((1-alpha) * b1 + alpha *b2);
+
+                        // aditive blending
+//                        r = Math.min(255, r1+r2);
+//                        g = Math.min(255, g1+g2);
+//                        b = Math.min(255, b1+b2);
+
+                        // Multiplicative blending
+//                        r = (r1 * r2) / 255;
+//                        g = (g1 * g2) / 255;
+//                        b = (b1 * b2) / 255;
+
 
                         pixelBlend = (r << 16)|(g << 8)|b;
                         bufferBlend.setRGB(x, y, pixelBlend);

@@ -1,4 +1,4 @@
-package org.practica;
+package org.practica.uno;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
