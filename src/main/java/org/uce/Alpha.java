@@ -40,9 +40,9 @@ public class Alpha {
 
                 //Estirar
                 int exponente = 4;
-                r = (r*255)/(int) Math.pow(2, exponente);
-                g = (g*255)/(int) Math.pow(2, exponente);
-                b = (b*255)/(int) Math.pow(2, exponente);
+                r = (r*255)/(int) Math.pow(2, exponente) - 1;
+                g = (g*255)/(int) Math.pow(2, exponente) -1;
+                b = (b*255)/(int) Math.pow(2, exponente) -1;
 
                 pixelNuevo =  (a << 24) | (r << 16) | (g << 8) | (b);
 

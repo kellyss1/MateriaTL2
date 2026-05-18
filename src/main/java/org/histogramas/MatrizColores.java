@@ -51,7 +51,7 @@ public class MatrizColores {
             }
 
             ImageIO.write(buffer2, "jpg", file1);
-            System.out.printf("Matriz colores salvo com sucesso!\n");
+            System.out.print("Matriz colores salvo com sucesso!\n");
         } catch (Exception e) {
             System.out.printf("Erro ao ler imagem: %s\n", e.getMessage());
         }
