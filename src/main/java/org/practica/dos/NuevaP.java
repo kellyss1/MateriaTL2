@@ -381,4 +381,75 @@ public class NuevaP {
         ImageIO.write(bufferBlend, "jpg", result);
     }
 
+    public static void blending3(BufferedImage buffer, BufferedImage buffer2, BufferedImage buffer3) throws IOException {
+        int alto = buffer2.getHeight();
+        int ancho = buffer2.getWidth();
+
+        Image imgTemp1 = buffer.getScaledInstance(ancho, alto, Image.SCALE_FAST);
+
+        BufferedImage bufferTemp1 = new BufferedImage(ancho, alto, BufferedImage.TYPE_INT_RGB);
+        Graphics2D grTemp1 = bufferTemp1.createGraphics();
+        grTemp1.drawImage(imgTemp1, 0, 0, null);
+        grTemp1.dispose();
+
+        buffer = bufferTemp1;
+
+
+        Image imgTemp3 = buffer3.getScaledInstance(ancho, alto, Image.SCALE_FAST);
+
+        BufferedImage bufferTemp3 = new BufferedImage(ancho, alto, BufferedImage.TYPE_INT_RGB);
+        Graphics2D grTemp3 = bufferTemp3.createGraphics();
+        grTemp3.drawImage(imgTemp3, 0, 0, null);
+        grTemp3.dispose();
+
+        buffer3 = bufferTemp3;
+
+
+        BufferedImage bufferBlend = new BufferedImage(ancho, alto, BufferedImage.TYPE_INT_RGB);
+
+        int r,g,b, pixel1, pixel2, pixel3, pixelBlend;
+        int r1, g1, b1, r2, g2, b2, r3, g3, b3;
+
+        float alpha1 = 0.33f;
+        float alpha2 = 0.33f;
+        float alpha3 = 0.34f;
+
+        for (int y = 0; y < alto; y++) {
+
+            for (int x = 0; x < ancho; x++) {
+
+                pixel1 = buffer.getRGB(x, y);
+                pixel2 = buffer2.getRGB(x, y);
+                pixel3 = buffer3.getRGB(x, y);
+
+                // Imagen 1
+                r1 = (pixel1 >> 16) & 0xFF;
+                g1 = (pixel1 >> 8) & 0xFF;
+                b1 = pixel1 & 0xFF;
+
+                // Imagen 2
+                r2 = (pixel2 >> 16) & 0xFF;
+                g2 = (pixel2 >> 8) & 0xFF;
+                b2 = pixel2 & 0xFF;
+
+                // Imagen 3
+                r3 = (pixel3 >> 16) & 0xFF;
+                g3 = (pixel3 >> 8) & 0xFF;
+                b3 = pixel3 & 0xFF;
+
+                r = (int) (alpha1 * r1 + alpha2 * r2 + alpha3 * r3);
+
+                g = (int) (alpha1 * g1 + alpha2 * g2 + alpha3 * g3);
+
+                b = (int) (alpha1 * b1 + alpha2 * b2 + alpha3 * b3);
+
+                pixelBlend = (r << 16) | (g << 8) | b;
+
+                bufferBlend.setRGB(x, y, pixelBlend);
+            }
+        }
+        File salida = new File("imgP/blending3.png");
+        ImageIO.write(bufferBlend, "png", salida);
+    }
+
 }
