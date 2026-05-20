@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class NuevaP {
 
@@ -17,7 +18,7 @@ public class NuevaP {
 
         hsb(original, 1.2f, 1.4f);
 
-        histograma(original);
+        histograma(file);
 
         convolucion(original);
 
@@ -49,14 +50,14 @@ public class NuevaP {
                 g = (pixel >> 8) & 0xFF;
                 b = (pixel) & 0xFF;
 
-                //reducir y extender bits 3
+                //reducir y extender bits 3  (usamos solo 3, recortamos 5)
                 int mascaraRecorte = 0b111;  //tres unos
                 r = (r >> 5) & mascaraRecorte;  // como estoy recortando 3 solo debo leer 5
                 g = (g >> 5) & mascaraRecorte;
                 b = (b >> 5) & mascaraRecorte;
 
                 //ahora como recortamos tenemos que estirar, elevado a la potencia del exponente y menos 1
-                int exponente = 5;
+                int exponente = 3;
                 r = (r * 255) / (int) Math.pow(2, exponente) - 1;
                 g = (g * 255) / (int) Math.pow(2, exponente) - 1;
                 b = (b * 255) / (int) Math.pow(2, exponente) - 1;
@@ -208,77 +209,104 @@ public class NuevaP {
         ImageIO.write(buffer2, "jpg", file);
     }
 
-    public static void histograma(BufferedImage original) throws IOException {
+    public static void histograma(File file) throws IOException {
 
-        File histograma = new File("imgP/histograma.jpg");
+        BufferedImage original = ImageIO.read(file);
 
         int ancho = original.getWidth();
         int alto = original.getHeight();
 
+        int r,g,b, pixel;
+        int maxR, maxG, maxB;
+        float escalaYR, escalaYG, escalaYB;
+
         // Configuración del lienzo del histograma
         int anchoHisto = 800;
         int altoHisto = 600;
-        int margen = 20;
-        BufferedImage lienzo = new BufferedImage(anchoHisto, altoHisto, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2d = lienzo.createGraphics();
 
-        // 1. Fondo
-        g2d.setColor(Color.BLACK);
-        g2d.fillRect(0, 0, anchoHisto, altoHisto);
+        BufferedImage bufferHisto = new BufferedImage(anchoHisto, altoHisto, BufferedImage.TYPE_INT_RGB);
 
-        // 2. Arreglos para frecuencias
         int[] histoR = new int[256];
         int[] histoG = new int[256];
         int[] histoB = new int[256];
 
-        // 3. Conteo de píxeles
-        for (int y = 0; y < alto; y++) {
-            for (int x = 0; x < ancho; x++) {
-                int pixel = original.getRGB(x, y);
-                histoR[(pixel >> 16) & 0xFF]++;
-                histoG[(pixel >> 8) & 0xFF]++;
-                histoB[pixel & 0xFF]++;
+        Graphics2D gr = bufferHisto.createGraphics();
+        gr.setStroke(new BasicStroke(2));
+
+        gr.setColor(Color.WHITE);
+        gr.fillRect(0,0,anchoHisto, altoHisto);
+
+        // recorrer la imagen
+        for (int y =0; y < alto; y++) {
+            for (int x=0; x < ancho; x++) {
+                pixel = original.getRGB(x, y);
+
+                r = (pixel >> 16) & 0xFF;
+                g = (pixel >> 8) & 0xFF;
+                b = pixel & 0xFF;
+
+                histoR[r]++;
+                histoG[g]++;
+                histoB[b]++;
             }
         }
 
-        // 4. Calcular el máximo global para el escalado
-        int maxR = obtenerMaximo(histoR);
-        int maxG = obtenerMaximo(histoG);
-        int maxB = obtenerMaximo(histoB);
-        int maxGlobal = Math.max(maxR, Math.max(maxG, maxB));
+        // escala
+        float escalaX = anchoHisto / 256.0f;
 
-        float escalaX = (float) anchoHisto / 256;
-        float escalaY = (maxGlobal > 0) ? (float) (altoHisto - margen) / maxGlobal : 1.0f;
+        // dibujar histogramas, dibujar rojo
+        maxR = maximo(histoR);
+        escalaYR = (float) altoHisto / maxR;
+        gr.setColor(Color.RED);
+        for(int i=1; i < histoR.length; i++) {
+            int x1 = (int) (escalaX * (i-1));
+            int y1 = altoHisto - (int) (escalaYR * histoR[i-1]);
 
-        // 5. Dibujar los canales
-        g2d.setStroke(new BasicStroke(2));
+            int x2 = (int) (escalaX * i);
+            int y2 = altoHisto - (int) (escalaYR * histoR[i]);
 
-        // Dibujamos en orden para que se vean las superposiciones
-        dibujarCanal(g2d, histoR, Color.RED, escalaX, escalaY, altoHisto);
-        dibujarCanal(g2d, histoG, Color.GREEN, escalaX, escalaY, altoHisto);
-        dibujarCanal(g2d, histoB, Color.BLUE, escalaX, escalaY, altoHisto);
-
-        g2d.dispose();
-        ImageIO.write(lienzo, "jpg", histograma);
-        System.out.println("Histograma RGB creado con éxito");
-    }
-
-    private static void dibujarCanal(Graphics2D g, int[] datos, Color color, float ex, float ey, int alto) {
-        g.setColor(color);
-        for (int i = 1; i < datos.length; i++) {
-            int x1 = (int) ((i - 1) * ex);
-            int y1 = (alto - 10) - (int) (datos[i - 1] * ey);
-            int x2 = (int) (i * ex);
-            int y2 = (alto - 10) - (int) (datos[i] * ey);
-            g.drawLine(x1, y1, x2, y2);
+            gr.drawLine(x1, y1, x2, y2);
         }
+
+        //dibujar verde
+        maxG = maximo(histoG);
+        escalaYG = (float) altoHisto / maxG;
+        gr.setColor(Color.GREEN);
+        for(int i=1; i < histoG.length; i++) {
+            int x1 = (int) (escalaX * (i-1));
+            int y1 = altoHisto - (int) (escalaYG * histoG[i-1]);
+
+            int x2 = (int) (escalaX * i);
+            int y2 = altoHisto - (int) (escalaYG * histoG[i]);
+
+            gr.drawLine(x1, y1, x2, y2);
+        }
+
+        //dibujar azul
+        maxB = maximo(histoB);
+        escalaYB = (float) altoHisto / maxB;
+        gr.setColor(Color.BLUE);
+        for(int i=1; i < histoB.length; i++) {
+            int x1 = (int) (escalaX * (i-1));
+            int y1 = altoHisto - (int) (escalaYB * histoB[i-1]);
+
+            int x2 = (int) (escalaX * i);
+            int y2 = altoHisto - (int) (escalaYB * histoB[i]);
+
+            gr.drawLine(x1, y1, x2, y2);
+        }
+
+        File histograma = new File("imgP/histograma.jpg");
+        ImageIO.write(bufferHisto, "jpg", histograma);
     }
 
-    private static int obtenerMaximo(int[] h) {
-        int max = 0;
+    public static int maximo(int[] h) {
+        int max =0;
         for (int val : h) if (val > max) max = val;
+        System.out.println(Arrays.stream(h).max().getAsInt());
         return max;
     }
+
 
     public static void matrizColores(BufferedImage original) throws IOException {
         int width = original.getWidth();
@@ -325,7 +353,7 @@ public class NuevaP {
         int ancho = bufferimg1.getWidth();
         int alto = bufferimg1.getHeight();
 
-        Image imgTemp = bufferimg2.getScaledInstance(ancho, alto, BufferedImage.SCALE_FAST);
+        Image imgTemp = bufferimg2.getScaledInstance(ancho, alto, Image.SCALE_FAST);
         BufferedImage bufferTemp = new BufferedImage(ancho, alto, BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D grTemp = bufferTemp.createGraphics();
