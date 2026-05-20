@@ -307,46 +307,46 @@ public class NuevaP {
         return max;
     }
 
-
     public static void matrizColores(BufferedImage original) throws IOException {
-        int width = original.getWidth();
-        int height = original.getHeight();
+        int ancho = original.getWidth();
+        int alto = original.getHeight();
 
-        BufferedImage buffer2 = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
-        int r, g, b, pixel, pixelNuevo;
-        int r1, g1, b1;
-
-
-        float[][] colores = {
+        float[][] matriz = {
                 {0.299f, 0.587f, 0.114f, 0.0f},
                 {0.299f, 0.587f, 0.114f, 0.0f},
                 {0.299f, 0.587f, 0.114f, 0.0f},
                 {0.0f, 0.0f, 0.0f, 1.0f},
         };
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
+
+        int r,g,b, pixel, pixelNuevo;
+        int r1, g1, b1;
+
+        BufferedImage buffer = new BufferedImage(ancho, alto, BufferedImage.TYPE_INT_RGB);
+
+        for(int y=0; y < alto; y++) {
+            for(int x=0; x < ancho; x++) {
                 pixel = original.getRGB(x, y);
 
                 r = (pixel >> 16) & 0xFF;
                 g = (pixel >> 8) & 0xFF;
-                b = (pixel) & 0xFF;
+                b = pixel & 0xFF;
 
-                r1 = (int) (colores[0][0] * r + colores[0][1] * g + colores[0][2] * b);
-                g1 = (int) (colores[1][0] * r + colores[1][1] * g + colores[1][2] * b);
-                b1 = (int) (colores[2][0] * r + colores[2][1] * g + colores[2][2] * b);
+                r1 = (int) (matriz[0][0] * r + matriz[0][1] * g + matriz[0][2] * b);
+                g1 = (int) (matriz[1][0] * r + matriz[1][1] * g + matriz[1][2] * b);
+                b1 = (int) (matriz[2][0] * r + matriz[2][1] * g + matriz[2][2] * b);
 
                 r1 = Math.clamp(r1, 0, 255);
                 g1 = Math.clamp(g1, 0, 255);
                 b1 = Math.clamp(b1, 0, 255);
 
-                pixelNuevo = (r1 << 16) | (g1 << 8) | b1;
-                buffer2.setRGB(x, y, pixelNuevo);
+                pixelNuevo = (r1 << 16) |(g1 << 8) |(b1);
+                buffer.setRGB(x, y, pixelNuevo);
             }
         }
-        File file1 = new File("imgP/matrizColoresGris.jpg");
-        ImageIO.write(buffer2, "jpg", file1);
+        File file = new File("imgP/sepiaMatriz.jpg");
+        ImageIO.write(buffer, "jpg", file);
     }
+
 
     public static void blending(BufferedImage bufferimg1, BufferedImage bufferimg2) throws IOException {
         //el ancho y alto de la imagen más pequeña
