@@ -23,7 +23,7 @@ public class MatrizColores {
         int mascara = 0xFF;
 
         try {
-            float [][] colores = {
+            float [][] sepia = {
                     {0.299f, 0.587f, 0.114f, 0.0f},
                     {0.299f, 0.587f, 0.114f, 0.0f},
                     {0.299f, 0.587f, 0.114f, 0.0f},
@@ -37,9 +37,9 @@ public class MatrizColores {
                     g = (pixel >> 8) & 0xFF;
                     b = (pixel) & 0xFF;
 
-                    r1 = (int) (colores[0][0] *r + colores[0][1]*g + colores[0][2]*b);
-                    g1 = (int) (colores[1][0] *r + colores[1][1]*g + colores[1][2]*b);
-                    b1 = (int) (colores[2][0] *r + colores[2][1]*g + colores[2][2]*b);
+                    r1 = (int) (sepia[0][0] *r + sepia[0][1]*g + sepia[0][2]*b);
+                    g1 = (int) (sepia[1][0] *r + sepia[1][1]*g + sepia[1][2]*b);
+                    b1 = (int) (sepia[2][0] *r + sepia[2][1]*g + sepia[2][2]*b);
 
                     r1 = Math.clamp(r1, 0, 255);
                     g1 = Math.clamp(g1, 0, 255);
@@ -51,7 +51,6 @@ public class MatrizColores {
             }
 
             ImageIO.write(buffer2, "jpg", file1);
-            System.out.print("Matriz colores salvo com sucesso!\n");
         } catch (Exception e) {
             System.out.printf("Erro ao ler imagem: %s\n", e.getMessage());
         }

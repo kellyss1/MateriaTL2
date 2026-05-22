@@ -311,7 +311,7 @@ public class NuevaP {
         int ancho = original.getWidth();
         int alto = original.getHeight();
 
-        float[][] matriz = {
+        float[][] matrizSepia = {
                 {0.299f, 0.587f, 0.114f, 0.0f},
                 {0.299f, 0.587f, 0.114f, 0.0f},
                 {0.299f, 0.587f, 0.114f, 0.0f},
@@ -331,9 +331,9 @@ public class NuevaP {
                 g = (pixel >> 8) & 0xFF;
                 b = pixel & 0xFF;
 
-                r1 = (int) (matriz[0][0] * r + matriz[0][1] * g + matriz[0][2] * b);
-                g1 = (int) (matriz[1][0] * r + matriz[1][1] * g + matriz[1][2] * b);
-                b1 = (int) (matriz[2][0] * r + matriz[2][1] * g + matriz[2][2] * b);
+                r1 = (int) (matrizSepia[0][0] * r + matrizSepia[0][1] * g + matrizSepia[0][2] * b);
+                g1 = (int) (matrizSepia[1][0] * r + matrizSepia[1][1] * g + matrizSepia[1][2] * b);
+                b1 = (int) (matrizSepia[2][0] * r + matrizSepia[2][1] * g + matrizSepia[2][2] * b);
 
                 r1 = Math.clamp(r1, 0, 255);
                 g1 = Math.clamp(g1, 0, 255);
